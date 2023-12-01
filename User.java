@@ -1,4 +1,14 @@
-public class User {
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class User implements Serializable {
     private String username;
     private String password;
     
@@ -47,7 +57,57 @@ public class User {
     @Override
     public String toString() {
         return "Username = " + username + ", Password = " + password;
-    }    
+    }
+    
+    public static void register(String username, String password) {
+        // Check if the username is already taken
+        if (userExists(username)) {
+            System.out.println("Username already exists. Please choose a different username.");
+            return;
+        }
+        User newUser = new User(username, password);
+        // Save the user information to the database file
+        saveToDatabase(newUser);
+        System.out.println("Registration successful.");
+    }
+
+    private static boolean userExists(String username) {
+        // Check if the username exists in the database
+        List<User> users = loadFromDatabase();
+        for (User user : users) {
+            if (user.username.equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void saveToDatabase(User user) {
+        // Save user information to the database file
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("UserDatabase/user_database.txt", true))) {
+            oos.writeObject(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<User> loadFromDatabase() {
+        // Load user information from the database file
+        List<User> users = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("UserDatabase/user_database.txt"))) {
+            while (true) {
+                try {
+                    User user = (User) ois.readObject();
+                    users.add(user);
+                } catch (EOFException e) {
+                    break;
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 }
 
 
