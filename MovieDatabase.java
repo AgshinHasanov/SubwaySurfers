@@ -49,7 +49,7 @@ public class MovieDatabase {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(databaseFileName))) {
             oos.writeObject(movies);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error saving the database: " + e.getMessage());
         }
     }
 
@@ -57,8 +57,7 @@ public class MovieDatabase {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(databaseFileName))) {
             movies = (List<Movie>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Error loading the database: " + e.getMessage());
         }
     }
-
 }

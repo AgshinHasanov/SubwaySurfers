@@ -90,7 +90,7 @@ public class User implements Serializable {
 
     private static void saveToDatabase(List<User> users) {
         // Save user information to the database file
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("UserDatabase.txt"))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Database/UserDatabase.txt"))) {
             for (User user : users) {
                 oos.writeObject(user);
             }
@@ -103,7 +103,7 @@ public class User implements Serializable {
     public static List<User> loadFromDatabase() {
         // Load user information from the database file
         List<User> users = new ArrayList<>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("UserDatabase.txt"))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Datbase/UserDatabase.txt"))) {
             while (true) {
                 try {
                     User user = (User) ois.readObject();
