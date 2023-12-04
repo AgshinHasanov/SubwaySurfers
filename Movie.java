@@ -4,31 +4,29 @@ public class Movie implements Serializable {
     private String title;
     private String director;
     private int year;
-    private int RunningTime;
+    private int runningTime;
 
-    public Movie(String title,String director, int year , int RunningTime){
-        if(year<1895 || year>2023){
-            System.out.println("You should write between 1895 and 2023");
-        }
-        if(RunningTime < 0){
-           System.out.println("Running time cannot be a negative number");
-        }
-        else{
-        this.title=title;
-        this.director=director;
-        this.year=year;
-        this.RunningTime=RunningTime;
+    public Movie(String title, String director, int year, int runningTime) {
+        try {
+            if (year < 1895 || year > 2023) throw new IllegalArgumentException("Year should be between 1895 and 2023");
+            if (runningTime < 0) throw new IllegalArgumentException("Running time cannot be a negative number");
+            this.title = title;
+            this.director = director;
+            this.year = year;
+            this.runningTime = runningTime;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    public Movie(){
-        this.title="The Godfather";
-        this.year=1972;
-        this.RunningTime=175;
+    public Movie() {
+        this.title = "The Godfather";
+        this.year = 1972;
+        this.runningTime = 175;
     }
 
     public int getRunningTime() {
-        return RunningTime;
+        return runningTime;
     }
 
     public String getTitle() {
@@ -44,11 +42,14 @@ public class Movie implements Serializable {
     }
 
     public void setRunningTime(int runningTime) {
-        if(RunningTime < 0){
-           System.out.println("Running time cannot be a negative number");
+        try {
+            if (runningTime < 0) {
+                throw new IllegalArgumentException("Running time cannot be a negative number");
+            }
+            this.runningTime = runningTime;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
-        this.RunningTime = runningTime;
-        
     }
 
     public void setTitle(String title) {
@@ -56,10 +57,14 @@ public class Movie implements Serializable {
     }
 
     public void setYear(int year) {
-         if(year<1895 || year>2023){
-            System.out.println("You should write between 1895 and 2023");
+        try {
+            if (year < 1895 || year > 2023) {
+                throw new IllegalArgumentException("Year should be between 1895 and 2023");
+            }
+            this.year = year;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
-        this.year = year;
     }
 
     public void setDirector(String director) {
@@ -67,11 +72,7 @@ public class Movie implements Serializable {
     }
 
     @Override
-    public String toString(){
-        return title + " " + year + " " + RunningTime;
+    public String toString() {
+        return title + " " + year + " " + runningTime;
     }
-
-
-
-
 }
