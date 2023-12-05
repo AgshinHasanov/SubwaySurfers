@@ -17,7 +17,7 @@ public class MovieDatabase {
             saveDatabase();
             System.out.println("Movie added to the database: " + movie.getTitle());
         } else {
-            System.out.println("Movie already exists in the database.");
+            throw new IllegalArgumentException("Movie already exists in the database.");
         }
     }
 
@@ -26,7 +26,7 @@ public class MovieDatabase {
             saveDatabase();
             System.out.println("Movie removed from the database: " + movie.getTitle());
         } else {
-            System.out.println("Movie not found in the database.");
+            throw new IllegalArgumentException("Movie not found in the database.");
         }
     }
 
