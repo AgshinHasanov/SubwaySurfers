@@ -42,6 +42,8 @@ public class UserGUI extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 User.register(username, password);
+
+                // No need to handle pop-ups here as User.register() handles it
             }
         });
 
@@ -52,9 +54,9 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean loggedIn = user.checkLogin(username, password);
                 if (loggedIn) {
-                    JOptionPane.showMessageDialog(null, "Login successful!");
+                    JOptionPane.showMessageDialog(null, "Login successful!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid username or password");
+                    JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

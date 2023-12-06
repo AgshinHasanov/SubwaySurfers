@@ -54,25 +54,33 @@ public class User implements Serializable {
         return "Username = " + username + ", Password = " + password;
     }
 
-    public static synchronized void register(String username, String password) {
+    public static void register(String username, String password) {
         try {
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+    
             List<User> existingUsers = loadFromDatabase();
-
-            // Check if the username is already taken
+    
             if (userExists(existingUsers, username)) {
                 System.out.println("Username already exists. Please choose a different username.");
                 return;
             }
-
-            // Add the new user and save the updated list
             existingUsers.add(new User(username, password));
             saveToDatabase(existingUsers);
-
+    
             System.out.println("Registration successful.");
+
+        } catch (IllegalArgumentException | NullPointerException e) {
+            System.out.println(e.getMessage());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    
+
 
     private static boolean userExists(List<User> existingUsers, String username) {
         for (User user : existingUsers) {
