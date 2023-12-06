@@ -60,4 +60,9 @@ public class MovieDatabase {
             System.err.println("Error loading the database: " + e.getMessage());
         }
     }
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+    
 }
