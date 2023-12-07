@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -6,6 +7,7 @@ public class UserGUI extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private User user;
+    private MovieDatabase movieDatabase;
 
     public UserGUI() {
         setTitle("User Authentication");
@@ -35,6 +37,7 @@ public class UserGUI extends JFrame {
         panel.add(loginButton);
 
         user = new User();
+        movieDatabase = new MovieDatabase("movies.dat");
 
         registerButton.addActionListener(new ActionListener() {
             @Override
@@ -42,8 +45,6 @@ public class UserGUI extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 User.register(username, password);
-
-                // No need to handle pop-ups here as User.register() handles it
             }
         });
 
@@ -54,7 +55,8 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean loggedIn = user.checkLogin(username, password);
                 if (loggedIn) {
-                    JOptionPane.showMessageDialog(null, "Login successful!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                    // Open a new frame for the movie information
+                    showMovieInfoFrame();
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
@@ -63,6 +65,27 @@ public class UserGUI extends JFrame {
 
         add(panel);
         setVisible(true);
+    }
+
+    private void showMovieInfoFrame() {
+        JFrame movieInfoFrame = new JFrame();
+        movieInfoFrame.setTitle("Movie Information");
+        movieInfoFrame.setSize(400, 300);
+        movieInfoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        movieInfoFrame.setLocationRelativeTo(null);
+
+        JPanel moviePanel = new JPanel(new GridLayout(0, 1));
+
+        // Retrieve movies from the database and display their information
+        for (Movie movie : movieDatabase.getMovies()) {
+            JLabel movieLabel = new JLabel(movie.toString());
+            moviePanel.add(movieLabel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(moviePanel);
+        movieInfoFrame.add(scrollPane);
+
+        movieInfoFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
