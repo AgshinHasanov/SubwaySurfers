@@ -44,7 +44,18 @@ public class UserGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-                User.register(username, password);
+                try {
+                    User.register(username, password);
+
+                    // Display registration successful message
+                    JOptionPane.showMessageDialog(null, "Registration successful.");
+
+                } catch (IllegalArgumentException | NullPointerException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
