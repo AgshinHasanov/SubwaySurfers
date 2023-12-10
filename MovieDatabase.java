@@ -52,7 +52,7 @@ public class MovieDatabase {
             System.err.println("Error saving the database: " + e.getMessage());
         }
     }
-
+    @SuppressWarnings("unchecked")
     public void loadDatabase() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(databaseFileName))) {
             movies = (List<Movie>) ois.readObject();
