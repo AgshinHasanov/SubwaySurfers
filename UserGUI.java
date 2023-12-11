@@ -15,6 +15,10 @@ public class UserGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        String imagePath = "Database/SSpng.png";
+        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+        setIconImage(icon.getImage());
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
