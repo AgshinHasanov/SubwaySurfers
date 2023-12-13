@@ -1,7 +1,10 @@
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class UserGUI extends JFrame {
     private JTextField usernameField;
@@ -85,21 +88,57 @@ public class UserGUI extends JFrame {
     private void showMovieInfoFrame() {
         JFrame movieInfoFrame = new JFrame();
         movieInfoFrame.setTitle("Movie Information");
-        movieInfoFrame.setSize(400, 300);
-        movieInfoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        movieInfoFrame.setSize(600, 400);
+        movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
 
-        JPanel moviePanel = new JPanel(new GridLayout(0, 1));
+        // Retrieve movies from the database
+        List<Movie> movies = movieDatabase.getMovies();
 
-        // Retrieve movies from the database and display their information
-        for (Movie movie : movieDatabase.getMovies()) {
-            JLabel movieLabel = new JLabel(movie.toString());
-            moviePanel.add(movieLabel);
+        // Create a JTable to display movie information
+        JTable movieTable = new JTable(new MovieTableModel(movies));
+        JScrollPane scrollPane = new JScrollPane(movieTable);
+
+        movieInfoFrame.add(scrollPane);
+        movieInfoFrame.setVisible(true);
+    }
+
+    private static class MovieTableModel extends AbstractTableModel {
+        private List<Movie> movies;
+        private final String[] columnNames = {"Title", "Director", "Release Year", "Genre"};
+
+        public MovieTableModel(List<Movie> movies) {
+            this.movies = movies;
         }
 
-        JScrollPane scrollPane = new JScrollPane(moviePanel);
-        movieInfoFrame.add(scrollPane);
+        @Override
+        public int getRowCount() {
+            return movies.size();
+        }
 
-        movieInfoFrame.setVisible(true);
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            return columnNames[columnIndex];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            Movie movie = movies.get(rowIndex);
+            switch (columnIndex) {
+                case 0:
+                    return movie.getTitle();
+                case 1:
+                    return movie.getDirector();
+                case 2:
+                    return movie.getYear();
+                default:
+                    return null;
+            }
+        }
     }
 }
