@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class UserGUI extends JFrame {
     private JTextField usernameField;
@@ -50,13 +51,9 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 try {
                     User.register(username, password);
-
-                    // Display registration successful message
                     JOptionPane.showMessageDialog(null, "Registration successful.");
-
                 } catch (IllegalArgumentException | NullPointerException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -70,8 +67,9 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean loggedIn = user.checkLogin(username, password);
                 if (loggedIn) {
-                    // Open a new frame for the movie information
+                    // Automatically show movies after logging in
                     showMovieInfoFrame();
+                    JOptionPane.showMessageDialog(null, "Login successful.");
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
@@ -85,21 +83,31 @@ public class UserGUI extends JFrame {
     private void showMovieInfoFrame() {
         JFrame movieInfoFrame = new JFrame();
         movieInfoFrame.setTitle("Movie Information");
-        movieInfoFrame.setSize(400, 300);
+        movieInfoFrame.setSize(800, 600);
         movieInfoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
 
-        JPanel moviePanel = new JPanel(new GridLayout(0, 1));
+        JPanel moviePanel = new JPanel(new GridLayout(0, 1, 10, 10));
 
-        // Retrieve movies from the database and display their information
-        for (Movie movie : movieDatabase.getMovies()) {
-            JLabel movieLabel = new JLabel(movie.toString());
-            moviePanel.add(movieLabel);
+        List<Movie> movies = movieDatabase.getMovies();
+        for (int i = 0; i < movies.size(); i++) {
+            Movie movie = movies.get(i);
+
+            JPanel movieContainer = new JPanel(new BorderLayout());
+            movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
+
+            JLabel movieLabel = new JLabel(movie.getTitle());
+            movieContainer.add(movieLabel, BorderLayout.CENTER);
+            moviePanel.add(movieContainer);
         }
 
         JScrollPane scrollPane = new JScrollPane(moviePanel);
         movieInfoFrame.add(scrollPane);
 
         movieInfoFrame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new UserGUI());
     }
 }
