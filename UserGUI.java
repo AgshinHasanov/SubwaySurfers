@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,13 +51,9 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 try {
                     User.register(username, password);
-
-                    // Display registration successful message
                     JOptionPane.showMessageDialog(null, "Registration successful.");
-
                 } catch (IllegalArgumentException | NullPointerException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -73,8 +67,9 @@ public class UserGUI extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean loggedIn = user.checkLogin(username, password);
                 if (loggedIn) {
-                    // Open a new frame for the movie information
+                    // Automatically show movies after logging in
                     showMovieInfoFrame();
+                    JOptionPane.showMessageDialog(null, "Login successful.");
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
@@ -88,57 +83,31 @@ public class UserGUI extends JFrame {
     private void showMovieInfoFrame() {
         JFrame movieInfoFrame = new JFrame();
         movieInfoFrame.setTitle("Movie Information");
-        movieInfoFrame.setSize(600, 400);
-        movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        movieInfoFrame.setSize(800, 600);
+        movieInfoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
 
-        // Retrieve movies from the database
+        JPanel moviePanel = new JPanel(new GridLayout(0, 1, 10, 10));
+
         List<Movie> movies = movieDatabase.getMovies();
+        for (int i = 0; i < movies.size(); i++) {
+            Movie movie = movies.get(i);
 
-        // Create a JTable to display movie information
-        JTable movieTable = new JTable(new MovieTableModel(movies));
-        JScrollPane scrollPane = new JScrollPane(movieTable);
+            JPanel movieContainer = new JPanel(new BorderLayout());
+            movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
 
+            JLabel movieLabel = new JLabel(movie.getTitle());
+            movieContainer.add(movieLabel, BorderLayout.CENTER);
+            moviePanel.add(movieContainer);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(moviePanel);
         movieInfoFrame.add(scrollPane);
+
         movieInfoFrame.setVisible(true);
     }
 
-    private static class MovieTableModel extends AbstractTableModel {
-        private List<Movie> movies;
-        private final String[] columnNames = {"Title", "Director", "Release Year", "Genre"};
-
-        public MovieTableModel(List<Movie> movies) {
-            this.movies = movies;
-        }
-
-        @Override
-        public int getRowCount() {
-            return movies.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        @Override
-        public String getColumnName(int columnIndex) {
-            return columnNames[columnIndex];
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Movie movie = movies.get(rowIndex);
-            switch (columnIndex) {
-                case 0:
-                    return movie.getTitle();
-                case 1:
-                    return movie.getDirector();
-                case 2:
-                    return movie.getYear();
-                default:
-                    return null;
-            }
-        }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new UserGUI());
     }
 }
