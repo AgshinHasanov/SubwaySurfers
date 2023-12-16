@@ -10,7 +10,7 @@ public class UserGUI extends JFrame {
     private User user;
     private MovieDatabase movieDatabase;
 
-    public UserGUI() {
+    public UserGUI(MovieDatabase movieDatabase) {
         setTitle("User Authentication");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,8 +41,8 @@ public class UserGUI extends JFrame {
         JButton loginButton = new JButton("Login");
         panel.add(loginButton);
 
+        this.movieDatabase = movieDatabase;
         user = new User();
-        movieDatabase = new MovieDatabase("movies.dat");
 
         registerButton.addActionListener(new ActionListener() {
             @Override
@@ -84,7 +84,7 @@ public class UserGUI extends JFrame {
         JFrame movieInfoFrame = new JFrame();
         movieInfoFrame.setTitle("Movie Information");
         movieInfoFrame.setSize(800, 600);
-        movieInfoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
 
         JPanel moviePanel = new JPanel(new GridLayout(0, 1, 10, 10));
@@ -108,6 +108,12 @@ public class UserGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new UserGUI());
+        // Create and add movies to the movie database
+        MovieDatabase movieDatabase = new MovieDatabase("movies.dat");
+        movieDatabase.addMovie(new Movie("The Godfather", "Francis Ford Coppola", 1972, 175));
+        movieDatabase.addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 169));
+
+        // Start the UserGUI with the movie database
+        SwingUtilities.invokeLater(() -> new UserGUI(movieDatabase));
     }
 }
