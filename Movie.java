@@ -5,8 +5,9 @@ public class Movie implements Serializable {
     private String director;
     private int year;
     private int runningTime;
+    private String photoDirectory;
 
-    public Movie(String title, String director, int year, int runningTime) {
+    public Movie(String title, String director, int year, int runningTime, String photoDirectory) {
         try {
             if (year < 1895 || year > 2023) throw new IllegalArgumentException("Year should be between 1895 and 2023");
             if (runningTime < 0) throw new IllegalArgumentException("Running time cannot be a negative number");
@@ -14,9 +15,19 @@ public class Movie implements Serializable {
             this.director = director;
             this.year = year;
             this.runningTime = runningTime;
+            this.photoDirectory = photoDirectory;
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    // Getter and setter for photo directory
+    public String getPhotoDirectory() {
+        return photoDirectory;
+    }
+
+    public void setPhotoDirectory(String photoDirectory) {
+        this.photoDirectory = photoDirectory;
     }
 
     public Movie() {
