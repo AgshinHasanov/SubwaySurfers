@@ -16,10 +16,6 @@ public class UserGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        String imagePath = "Database/SSpng.png";
-        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
-        setIconImage(icon.getImage());
-
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -86,34 +82,48 @@ public class UserGUI extends JFrame {
         movieInfoFrame.setSize(800, 600);
         movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
-
+    
         JPanel moviePanel = new JPanel(new GridLayout(0, 1, 10, 10));
-
+    
         List<Movie> movies = movieDatabase.getMovies();
         for (int i = 0; i < movies.size(); i++) {
             Movie movie = movies.get(i);
-
+    
             JPanel movieContainer = new JPanel(new BorderLayout());
             movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
-
+    
             JLabel movieLabel = new JLabel(movie.getTitle());
+    
+            // Display scaled photo if the photo directory is available
+            if (movie.getPhotoDirectory() != null && !movie.getPhotoDirectory().isEmpty()) {
+                ImageIcon originalIcon = new ImageIcon(movie.getPhotoDirectory());
+                Image originalImage = originalIcon.getImage();
+    
+                // Define the maximum width and height for the displayed image
+                int maxWidth = 150;
+                int maxHeight = 200;
+    
+                // Scale the image proportionally
+                int scaledWidth = Math.min(originalImage.getWidth(null), maxWidth);
+                int scaledHeight = (int) (((double) scaledWidth / originalImage.getWidth(null)) * originalImage.getHeight(null));
+    
+                // Create a scaled ImageIcon
+                ImageIcon scaledIcon = new ImageIcon(originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH));
+                JLabel photoLabel = new JLabel(scaledIcon);
+    
+                movieContainer.add(photoLabel, BorderLayout.NORTH);
+            }
+    
             movieContainer.add(movieLabel, BorderLayout.CENTER);
             moviePanel.add(movieContainer);
         }
-
+    
         JScrollPane scrollPane = new JScrollPane(moviePanel);
         movieInfoFrame.add(scrollPane);
-
+    
         movieInfoFrame.setVisible(true);
     }
+    
 
-    public static void main(String[] args) {
-        // Create and add movies to the movie database
-        MovieDatabase movieDatabase = new MovieDatabase("movies.dat");
-        movieDatabase.addMovie(new Movie("The Godfather", "Francis Ford Coppola", 1972, 175));
-        movieDatabase.addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 169));
 
-        // Start the UserGUI with the movie database
-        SwingUtilities.invokeLater(() -> new UserGUI(movieDatabase));
-    }
 }
