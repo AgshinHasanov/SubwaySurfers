@@ -5,10 +5,12 @@ import java.util.List;
 public class User implements Serializable {
     private String username;
     private String password;
+    private List<Movie> watchlist;
 
     public User(String username, String password) {
         setUsername(username);
         setPassword(password);
+        watchlist = new ArrayList<>();
     }
 
     public User() {
@@ -116,5 +118,18 @@ public class User implements Serializable {
         }
 
         return false; // No matching username and password found
+    }
+    public void addToWatchlist(Movie movie) {
+        watchlist.add(movie);
+    }
+    public void removeFromWatchlist(Movie movie) {
+        watchlist.remove(movie);
+    }
+
+    public void displayWatchlist() {
+        // Implement how to display the watchlist (e.g., printing or GUI)
+        for (Movie movie : watchlist) {
+            System.out.println(movie.toString());
+        }
     }
 }
