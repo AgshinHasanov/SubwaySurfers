@@ -122,8 +122,49 @@ public class UserGUI extends JFrame {
         movieInfoFrame.add(scrollPane);
     
         movieInfoFrame.setVisible(true);
-    }
-    
 
+
+        JButton addToWatchlistButton = new JButton("Add to Watchlist");
+        JButton removeFromWatchlistButton = new JButton("Remove from Watchlist");
+        JButton displayWatchlistButton = new JButton("Display Watchlist");
+
+        // Add action listeners for the watchlist buttons
+        addToWatchlistButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Movie selectedMovie = getSelectedMovie();
+                user.addToWatchlist(selectedMovie);
+                JOptionPane.showMessageDialog(null, "Movie added to Watchlist.");
+            }
+        });
+
+        removeFromWatchlistButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Movie selectedMovie = getSelectedMovie();
+                user.removeFromWatchlist(selectedMovie);
+                JOptionPane.showMessageDialog(null, "Movie removed from Watchlist.");
+            }
+        });
+
+        displayWatchlistButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user.displayWatchlist();
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addToWatchlistButton);
+        buttonPanel.add(removeFromWatchlistButton);
+        buttonPanel.add(displayWatchlistButton);
+
+        movieInfoFrame.add(buttonPanel);
+        movieInfoFrame.setVisible(true);
+    }
+
+    private Movie getSelectedMovie() {
+        return new Movie();
+    }
 
 }
