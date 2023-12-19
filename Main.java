@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
         // Create and add movies to the movie database
         MovieDatabase movieDatabase = new MovieDatabase("movies.dat");
-        movieDatabase.addMovie(new Movie("The Godfather", "Francis Ford Coppola", 1972, 175, "SubwaySurfers\\Database\\GodFather.jpg"));
+        movieDatabase.addMovie(new Movie("The Godfather", "Francis Ford Coppola", 1972, 175, "Database\\GodFather.jpg"));
         movieDatabase.addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 169, "Database\\InterStellar.jpg"));
         movieDatabase.addMovie(new Movie("Titanic", "James Cameron", 1997, 195, "Database\\Titanic.jpg"));
         movieDatabase.addMovie(new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 142, "Database\\ShawshankRedemption.jpg"));
