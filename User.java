@@ -6,6 +6,7 @@ public class User implements Serializable {
     private String username;
     private String password;
     private List<Movie> watchlist;
+    
 
     public User(String username, String password) {
         setUsername(username);
@@ -14,7 +15,9 @@ public class User implements Serializable {
     }
 
     public User() {
+        this.watchlist = new ArrayList<>();
     }
+    
 
     public String getUsername() {
         return username;
@@ -124,6 +127,10 @@ public class User implements Serializable {
     }
     public void removeFromWatchlist(Movie movie) {
         watchlist.remove(movie);
+    }
+
+    public List<Movie> getWatchlist() {
+        return watchlist;
     }
 
     public void displayWatchlist() {

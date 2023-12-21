@@ -70,11 +70,15 @@ public class UserGUI extends JFrame {
                     // Automatically show movies after logging in
                     showMovieInfoFrame();
                     JOptionPane.showMessageDialog(null, "Login successful.");
+        
+                    // Close the current login frame
+                    dispose(); // This will close the current JFrame (UserGUI)
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+        
 
         add(panel);
         pack(); // Adjust frame size based on components
@@ -172,10 +176,22 @@ public class UserGUI extends JFrame {
         displayWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user.displayWatchlist();
+                List<Movie> watchlist = user.getWatchlist(); 
+        
+                if (watchlist.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Watchlist is empty.");
+                } else {
+                    StringBuilder watchlistInfo = new StringBuilder("Movies in Watchlist:\n");
+                    for (Movie movie : watchlist) {
+                        watchlistInfo.append("- ").append(movie.getTitle()).append("\n");
+                        
+                    }
+        
+                    JOptionPane.showMessageDialog(null, watchlistInfo.toString(), "Watchlist", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
-    
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addToWatchlistButton);
         buttonPanel.add(removeFromWatchlistButton);
