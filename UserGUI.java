@@ -11,12 +11,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UserGUI extends JFrame implements Serializable{
+public class UserGUI extends JFrame{
     private JTextField usernameField;
     private JPasswordField passwordField;
     private User user;
@@ -24,7 +23,9 @@ public class UserGUI extends JFrame implements Serializable{
     private List<Movie> selectedMovies;
     private static final String USERS_DATA_FILE = "Database/users.ser";
     private List<User> users;
-
+    private JFrame movieInfoFrame;
+    private JLabel filterStatusLabel;
+    
     public UserGUI(MovieDatabase movieDatabase) {
         setTitle("SubwaySurfers");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,14 +65,18 @@ public class UserGUI extends JFrame implements Serializable{
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-    
-                if (findUserByUsername(username) == null) {
-                    User newUser = new User(username, password);
-                    users.add(newUser);
-                    saveUsersData();
-                    JOptionPane.showMessageDialog(null, "Registration successful.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Username already exists", "Registration Failed", JOptionPane.ERROR_MESSAGE);
+        
+                try {
+                    if (findUserByUsername(username) == null) {
+                        User newUser = new User(username, password);
+                        users.add(newUser);
+                        saveUsersData();
+                        JOptionPane.showMessageDialog(null, "Registration successful.");
+                    } else {
+                        throw new IllegalArgumentException("Username already exists");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -83,25 +88,30 @@ public class UserGUI extends JFrame implements Serializable{
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 User loggedInUser = findUserByUsername(username);
-    
-                if (loggedInUser != null && loggedInUser.getPassword().equals(password)) {
-                    user = loggedInUser;
-                    loadWatchlistData();
-                    showMovieInfoFrame();
-                    JOptionPane.showMessageDialog(null, "Login successful.");
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+        
+                try {
+                    if (loggedInUser != null && loggedInUser.getPassword().equals(password)) {
+                        user = loggedInUser;
+                        loadWatchlistData();
+                        showMovieInfoFrame();
+                        JOptionPane.showMessageDialog(null, "Login successful.");
+                        dispose();
+                    } else {
+                        throw new IllegalArgumentException("Invalid username or password");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-
         add(panel);
         pack(); // Adjust frame size based on components
         setResizable(false); // Disable frame resizing
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
         loadWatchlistData();
+        filterStatusLabel = new JLabel("Filter By: Title"); // Initial text
+        panel.add(filterStatusLabel, BorderLayout.SOUTH);
     }
     @SuppressWarnings("unchecked")
     private List<User> loadUsersData() {
@@ -138,7 +148,7 @@ public class UserGUI extends JFrame implements Serializable{
             String userWatchlistFilePath = userWatchlistFolder + userWatchlistFileName;
     
             try {
-                // Create the folder if it doesn't exist
+                // Create the folder if it does not exist
                 new File(userWatchlistFolder).mkdirs();
     
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userWatchlistFilePath));
@@ -174,12 +184,15 @@ public class UserGUI extends JFrame implements Serializable{
     
 
     private void showMovieInfoFrame() {
-        JFrame movieInfoFrame = new JFrame();
+        if (movieInfoFrame != null) {
+            movieInfoFrame.dispose(); // Close the existing movieInfoFrame before updating
+        }
+    
+        movieInfoFrame = new JFrame();
         movieInfoFrame.setTitle("Movie Information");
         movieInfoFrame.setSize(800, 600);
         movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
-
         JPanel moviePanel = new JPanel(new GridLayout(0, 2, 10, 10));
 
         List<Movie> movies = movieDatabase.getMovies();
@@ -194,8 +207,6 @@ public class UserGUI extends JFrame implements Serializable{
                 Image originalImage = originalIcon.getImage();
 
                 int maxWidth = 150;
-                int maxHeight = 200;
-
                 int scaledWidth = Math.min(originalImage.getWidth(null), maxWidth);
                 int scaledHeight = (int) (((double) scaledWidth / originalImage.getWidth(null)) * originalImage.getHeight(null));
 
@@ -327,29 +338,83 @@ public class UserGUI extends JFrame implements Serializable{
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<Movie> watchlist = user.getWatchlist();
-
+        
                 if (watchlist.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Watchlist is empty.");
                 } else {
+                    int totalWatchTime = movieDatabase.calculateTotalWatchTimeInWatchlist(watchlist);
+        
                     StringBuilder watchlistInfo = new StringBuilder("Movies in Watchlist:\n");
                     for (Movie movie : watchlist) {
                         watchlistInfo.append("- ").append(movie.getTitle()).append("\n");
                     }
+        
+                    JOptionPane.showMessageDialog(null,
+                            "Total watch time in watchlist: " + totalWatchTime + " minutes\n\n" + watchlistInfo.toString(),
+                            "Watchlist", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        
+        
+        JComboBox<String> filterComboBox = new JComboBox<>(new String[]{"Title", "Director", "Running Time", "Release Year"});
+        JPanel filterPanel = new JPanel();
+        filterPanel.add(new JLabel("Filter By:"));
+        filterPanel.add(filterComboBox);
+        movieInfoFrame.add(filterPanel, BorderLayout.NORTH);
 
-                    JOptionPane.showMessageDialog(null, watchlistInfo.toString(), "Watchlist", JOptionPane.INFORMATION_MESSAGE);
+        filterComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedFilter = (String) filterComboBox.getSelectedItem();
+                if (selectedFilter != null) {
+                    // Sort movies based on the selected filter
+                    sortMoviesBy(selectedFilter);
+                    // Update the filter status label
+                    filterStatusLabel.setText("Filter By: " + selectedFilter);
+                    // Refresh the movie display within the existing scroll pane
+                    updateMovieDisplay(moviePanel, scrollPane);
                 }
             }
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addToWatchlistButton);
-        buttonPanel.add(removeFromWatchlistButton);
-        buttonPanel.add(displayWatchlistButton);
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.add(addToWatchlistButton);
+    buttonPanel.add(removeFromWatchlistButton);
+    buttonPanel.add(displayWatchlistButton);
 
-        movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
-        movieInfoFrame.setVisible(true);
-        
+    movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
+    movieInfoFrame.setVisible(true);
+   
     }
+
+    private void sortMoviesBy(String filter) {
+        List<Movie> movies = movieDatabase.getMovies();
+        List<Movie> sortedMovies;
+        
+        switch (filter) {
+            case "Title":
+                sortedMovies = Movie.sortMoviesByTitle(movies);
+                break;
+            case "Director":
+                sortedMovies = Movie.sortMoviesByDirector(movies);
+                break;
+            case "Running Time":
+                sortedMovies = Movie.sortMoviesByRunningTime(movies);
+                break;
+            case "Release Year":
+                sortedMovies = Movie.sortMoviesByYear(movies);
+                break;
+            default:
+                sortedMovies = movies; // Default behavior is no sorting
+                break;
+        }
+    
+        // Update the original movie list with the sorted movies
+        movies.clear();
+        movies.addAll(sortedMovies);
+    }
+    
     public void setAppIcon(String iconPath, int width, int height) {
         try {
             ImageIcon icon = new ImageIcon(iconPath);
@@ -360,5 +425,60 @@ public class UserGUI extends JFrame implements Serializable{
             e.printStackTrace();
         }
     }
-    
+    private void updateMovieDisplay(JPanel moviePanel, JScrollPane scrollPane) {
+        moviePanel.removeAll(); // Clear the movie panel
+        // Rebuild the movie panel based on the updated movie list
+        List<Movie> movies = movieDatabase.getMovies();
+        for (int i = 0; i < movies.size(); i++) {
+            Movie movie = movies.get(i);
+
+            JPanel movieContainer = new JPanel(new BorderLayout());
+            movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
+
+            if (movie.getPhotoDirectory() != null && !movie.getPhotoDirectory().isEmpty()) {
+                ImageIcon originalIcon = new ImageIcon(movie.getPhotoDirectory());
+                Image originalImage = originalIcon.getImage();
+
+                int maxWidth = 150;
+                int scaledWidth = Math.min(originalImage.getWidth(null), maxWidth);
+                int scaledHeight = (int) (((double) scaledWidth / originalImage.getWidth(null)) * originalImage.getHeight(null));
+
+                ImageIcon scaledIcon = new ImageIcon(originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH));
+                JLabel photoLabel = new JLabel(scaledIcon);
+
+                movieContainer.add(photoLabel, BorderLayout.WEST);
+            }
+
+            JPanel infoPanel = new JPanel(new GridLayout(4, 1));
+            JLabel titleLabel = new JLabel("Title: " + movie.getTitle());
+            JLabel directorLabel = new JLabel("Director: " + movie.getDirector());
+            JLabel yearLabel = new JLabel("Year: " + movie.getYear());
+            JLabel runningTimeLabel = new JLabel("Running Time: " + movie.getRunningTime() + " minutes");
+
+            infoPanel.add(titleLabel);
+            infoPanel.add(directorLabel);
+            infoPanel.add(yearLabel);
+            infoPanel.add(runningTimeLabel);
+
+            movieContainer.add(infoPanel, BorderLayout.CENTER);
+
+            // Add "Select" button for each movie
+            JButton selectButton = new JButton("Select");
+            selectButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Add the selected movie to the list
+                    if (!selectedMovies.contains(movie)) {
+                        selectedMovies.add(movie);
+                    }
+                }
+            });
+            movieContainer.add(selectButton, BorderLayout.EAST);
+
+            moviePanel.add(movieContainer);
+        }
+        // Refresh the scroll pane with the updated movie panel
+        moviePanel.revalidate();
+        moviePanel.repaint();
+    }
 }
