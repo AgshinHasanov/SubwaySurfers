@@ -4,18 +4,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class UserGUI extends JFrame {
+public class UserGUI extends JFrame implements Serializable{
     private JTextField usernameField;
     private JPasswordField passwordField;
     private User user;
     private MovieDatabase movieDatabase;
     private List<Movie> selectedMovies;
+    private static final String USERS_DATA_FILE = "Database/users.ser";
+    private List<User> users;
 
     public UserGUI(MovieDatabase movieDatabase) {
-        setTitle("User Authentication");
+        setTitle("SubwaySurfers");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -45,6 +56,7 @@ public class UserGUI extends JFrame {
 
         this.movieDatabase = movieDatabase;
         user = new User();
+        users = loadUsersData();
         selectedMovies = new ArrayList<>();
 
         registerButton.addActionListener(new ActionListener() {
@@ -52,30 +64,32 @@ public class UserGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-                try {
-                    User.register(username, password);
+    
+                if (findUserByUsername(username) == null) {
+                    User newUser = new User(username, password);
+                    users.add(newUser);
+                    saveUsersData();
                     JOptionPane.showMessageDialog(null, "Registration successful.");
-                } catch (IllegalArgumentException | NullPointerException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Username already exists", "Registration Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+    
 
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-                boolean loggedIn = user.checkLogin(username, password);
-                if (loggedIn) {
-                    // Automatically show movies after logging in
+                User loggedInUser = findUserByUsername(username);
+    
+                if (loggedInUser != null && loggedInUser.getPassword().equals(password)) {
+                    user = loggedInUser;
+                    loadWatchlistData();
                     showMovieInfoFrame();
                     JOptionPane.showMessageDialog(null, "Login successful.");
-
-                    // Close the current login frame
-                    dispose(); // This will close the current JFrame (UserGUI)
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
@@ -87,7 +101,77 @@ public class UserGUI extends JFrame {
         setResizable(false); // Disable frame resizing
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
+        loadWatchlistData();
     }
+    @SuppressWarnings("unchecked")
+    private List<User> loadUsersData() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(USERS_DATA_FILE))) {
+            return (List<User>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    private void saveUsersData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_DATA_FILE))) {
+            oos.writeObject(users);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private User findUserByUsername(String username) {
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void loadWatchlistData() {
+        if (user != null) {
+            String userWatchlistFolder = "UserWatchlists/";
+            String userWatchlistFileName = user.getUsername() + "_watchlist.ser";
+            String userWatchlistFilePath = userWatchlistFolder + userWatchlistFileName;
+    
+            try {
+                // Create the folder if it doesn't exist
+                new File(userWatchlistFolder).mkdirs();
+    
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userWatchlistFilePath));
+                List<Movie> loadedWatchlist = (List<Movie>) ois.readObject();
+                user.setWatchlist(loadedWatchlist);
+                ois.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("Watchlist file not found. Creating a new watchlist.");
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private void saveWatchlistData() {
+        if (user != null) {
+            String userWatchlistFolder = "UserWatchlists/";
+            String userWatchlistFileName = user.getUsername() + "_watchlist.ser";
+            String userWatchlistFilePath = userWatchlistFolder + userWatchlistFileName;
+    
+            try {
+                // Create the folder if it doesn't exist
+                new File(userWatchlistFolder).mkdirs();
+    
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userWatchlistFilePath));
+                oos.writeObject(user.getWatchlist());
+                oos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
 
     private void showMovieInfoFrame() {
         JFrame movieInfoFrame = new JFrame();
@@ -169,37 +253,79 @@ public class UserGUI extends JFrame {
         JButton addToWatchlistButton = new JButton("Add to Watchlist");
         JButton removeFromWatchlistButton = new JButton("Remove from Watchlist");
         JButton displayWatchlistButton = new JButton("Display Watchlist");
-
+        
         addToWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Add selected movies to the watchlist
-                for (Movie selectedMovie : selectedMovies) {
-                    user.addToWatchlist(selectedMovie);
+                if (selectedMovies.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No movies selected to add to Watchlist.");
+                } else {
+                    boolean movieAlreadyAdded = false;
+        
+                    for (Movie selectedMovie : selectedMovies) {
+                        boolean movieExists = false;
+                        for (Movie watchlistMovie : user.getWatchlist()) {
+                            if (watchlistMovie.equals(selectedMovie)) {
+                                movieExists = true;
+                                break;
+                            }
+                        }
+                        if (movieExists) {
+                            movieAlreadyAdded = true;
+                            break;
+                        }
+                    }
+        
+                    if (movieAlreadyAdded) {
+                        JOptionPane.showMessageDialog(null, "This movie is already in the Watchlist.");
+                    } else {
+                        List<Movie> moviesToAdd = new ArrayList<>(selectedMovies); // Create a new list
+                        for (Movie selectedMovie : moviesToAdd) {
+                            user.addToWatchlist(selectedMovie);
+                        }
+                        JOptionPane.showMessageDialog(null, "Movies added to Watchlist.");
+                        saveWatchlistData(); // Save updated watchlist data
+                    }
                 }
-                JOptionPane.showMessageDialog(null, "Movies added to Watchlist.");
-                // Clear the selected movies list
-                selectedMovies.clear();
+                selectedMovies.clear(); // Clear the original list after adding movies
             }
         });
-
+          
         removeFromWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Remove selected movies from the watchlist
-                for (Movie selectedMovie : selectedMovies) {
-                    user.removeFromWatchlist(selectedMovie);
+                if (selectedMovies.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No movies selected to remove from Watchlist.");
+                } else {
+                    boolean moviesRemoved = false;
+        
+                    for (Movie selectedMovie : selectedMovies) {
+                        Iterator<Movie> iterator = user.getWatchlist().iterator();
+                        while (iterator.hasNext()) {
+                            Movie movie = iterator.next();
+                            if (movie.equals(selectedMovie)) {
+                                iterator.remove();
+                                moviesRemoved = true;
+                                break; // Break the loop after removing the movie
+                            }
+                        }
+                    }
+        
+                    if (moviesRemoved) {
+                        JOptionPane.showMessageDialog(null, "Movies removed from Watchlist.");
+                        saveWatchlistData(); // Save updated watchlist data
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No selected movies found in Watchlist.");
+                    }
+        
+                    selectedMovies.clear();
                 }
-                JOptionPane.showMessageDialog(null, "Movies removed from Watchlist.");
-                // Clear the selected movies list
-                selectedMovies.clear();
             }
         });
-
+        
         displayWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Add logic to display watchlist
                 List<Movie> watchlist = user.getWatchlist();
 
                 if (watchlist.isEmpty()) {
@@ -222,11 +348,17 @@ public class UserGUI extends JFrame {
 
         movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
         movieInfoFrame.setVisible(true);
+        
     }
-
-    private Movie getSelectedMovie() {
-        return new Movie(); 
+    public void setAppIcon(String iconPath, int width, int height) {
+        try {
+            ImageIcon icon = new ImageIcon(iconPath);
+            Image img = icon.getImage();
+            Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            setIconImage(scaledImg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
- 
+    
 }
