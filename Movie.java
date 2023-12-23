@@ -1,4 +1,6 @@
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Movie implements Serializable {
     private String title;
@@ -100,5 +102,32 @@ public class Movie implements Serializable {
                && getDirector().equals(otherMovie.getDirector())
                && getYear() == otherMovie.getYear();
     }
-    
+    // Sort movies by title name alphabetically
+    public static List<Movie> sortMoviesByTitle(List<Movie> movies) {
+        return movies.stream()
+                .sorted((movie1, movie2) -> movie1.getTitle().compareTo(movie2.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    // Sort movies by director name alphabetically
+    public static List<Movie> sortMoviesByDirector(List<Movie> movies) {
+        return movies.stream()
+                .sorted((movie1, movie2) -> movie1.getDirector().compareTo(movie2.getDirector()))
+                .collect(Collectors.toList());
+    }
+
+    // Sort movies by release year
+    public static List<Movie> sortMoviesByYear(List<Movie> movies) {
+        return movies.stream()
+                .sorted((movie1, movie2) -> Integer.compare(movie1.getYear(), movie2.getYear()))
+                .collect(Collectors.toList());
+    }
+
+    // Sort movies by running time using lambda notation
+    public static List<Movie> sortMoviesByRunningTime(List<Movie> movies) {
+        return movies.stream()
+                .sorted((movie1, movie2) -> Integer.compare(movie1.getRunningTime(), movie2.getRunningTime()))
+                .collect(Collectors.toList());
+    }
+
 }
