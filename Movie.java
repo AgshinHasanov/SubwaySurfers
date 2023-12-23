@@ -86,4 +86,19 @@ public class Movie implements Serializable {
     public String toString() {
         return title + " " + year + " " + runningTime;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Movie otherMovie = (Movie) obj;
+        return getTitle().equals(otherMovie.getTitle())
+               && getDirector().equals(otherMovie.getDirector())
+               && getYear() == otherMovie.getYear();
+    }
+    
 }
