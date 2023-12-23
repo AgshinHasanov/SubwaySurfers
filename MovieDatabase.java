@@ -64,5 +64,14 @@ public class MovieDatabase {
     public List<Movie> getMovies() {
         return movies;
     }
+    public int calculateTotalWatchTimeInWatchlist(List<Movie> watchlist) {
+        int totalWatchTime = 0;
+
+        for (Movie movie : watchlist) {
+            totalWatchTime += movie.getRunningTime();
+        }
+
+        return totalWatchTime;
+    }
     
 }
