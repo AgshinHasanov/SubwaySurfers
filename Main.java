@@ -6,9 +6,9 @@ public class Main {
         // Create and add movies to the movie database
         MovieDatabase movieDatabase = new MovieDatabase("Database/movies.dat");
         movieDatabase.addMovie(new Movie("The Godfather", "Francis Ford Coppola", 1972, 175, "Database\\GodFather.jpg"));
-        movieDatabase.addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 169, "Database\\InterStellar.jpg"));
-        movieDatabase.addMovie(new Movie("Titanic", "James Cameron", 1997, 195, "Database\\Titanic.jpg"));
-        movieDatabase.addMovie(new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 142, "Database\\ShawshankRedemption.jpg"));
+        movieDatabase.addMovie(new Movie("Interstellar", "Christopher Nolan", 2014, 169, "Database\\InterStaller.jpg"));
+        movieDatabase.addMovie(new Movie("Titanic", "James Cameron", 1997, 195, "Database\\titanic.jpg"));
+        movieDatabase.addMovie(new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 142, "Database\\shawshank.jpg"));
         movieDatabase.addMovie(new Movie("The Dark Knight", "Christopher Nolan", 2008, 152, "Database\\DarkKnight.jpg"));
         movieDatabase.addMovie(new Movie("Jurassic Park", "Steven Spielberg", 1993, 127, "Database\\JurassicPark.jpg"));
         movieDatabase.addMovie(new Movie("The Matrix", "The Wachowskis", 1999, 136, "Database\\TheMatrix.jpg"));
