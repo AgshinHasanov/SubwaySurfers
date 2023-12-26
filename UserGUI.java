@@ -261,6 +261,22 @@ public class UserGUI extends JFrame{
         scrollPane.addMouseWheelListener(wheelListener);
         scrollPane.getVerticalScrollBar().addMouseWheelListener(wheelListener);
 
+        // Add horizontal scroll wheel listener
+        MouseWheelListener horizontalWheelListener = new MouseWheelListener() {
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) {
+        JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
+        int unitsToScroll = e.getUnitsToScroll() * scrollSpeed;
+        horizontalScrollBar.setValue(horizontalScrollBar.getValue() + unitsToScroll);
+         }
+        };
+
+        scrollPane.addMouseWheelListener(horizontalWheelListener);
+        scrollPane.getHorizontalScrollBar().addMouseWheelListener(horizontalWheelListener);
+
+
+       
+
         JButton addToWatchlistButton = new JButton("Add to Watchlist");
         JButton removeFromWatchlistButton = new JButton("Remove from Watchlist");
         JButton displayWatchlistButton = new JButton("Display Watchlist");
