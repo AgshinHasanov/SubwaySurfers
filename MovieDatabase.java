@@ -86,7 +86,7 @@ public class MovieDatabase {
     /**
      * Saves the current movie database to a file.
      */
-    private void saveDatabase() {
+    void saveDatabase() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(databaseFileName))) {
             oos.writeObject(movies);
         } catch (IOException e) {
