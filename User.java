@@ -2,26 +2,57 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The `User` class represents a user in the movie application, with a username, password, and watchlist.
+ * It provides methods for user registration, login validation, managing the watchlist, and interacting with the user database.
+ */
 public class User implements Serializable {
+
+    // Fields
+
     private String username;
     private String password;
     private List<Movie> watchlist;
 
+    // Constructors
+
+    /**
+     * Constructs a `User` with the specified username and password.
+     *
+     * @param username The username for the user.
+     * @param password The password for the user.
+     */
     public User(String username, String password) {
         setUsername(username);
         setPassword(password);
         watchlist = new ArrayList<>();
     }
 
+    /**
+     * Constructs a default `User` with an empty watchlist.
+     */
     public User() {
         this.watchlist = new ArrayList<>();
     }
-    
 
+    // Getters and Setters
+
+    /**
+     * Gets the username of the user.
+     *
+     * @return The username.
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets the username for the user.
+     *
+     * @param username The username to set.
+     * @throws NullPointerException     If the username is null.
+     * @throws IllegalArgumentException If the username is blank or contains invalid characters.
+     */
     public void setUsername(String username) {
         if (username == null) throw new NullPointerException("Username must contain only a-z/A-Z/0-9!");
         if (username.isBlank()) throw new IllegalArgumentException("Username must be written!");
@@ -35,10 +66,22 @@ public class User implements Serializable {
         this.username = username;
     }
 
+    /**
+     * Gets the password of the user.
+     *
+     * @return The password.
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets the password for the user.
+     *
+     * @param password The password to set.
+     * @throws NullPointerException     If the password is null.
+     * @throws IllegalArgumentException If the password is blank, less than 8 characters, or contains invalid characters.
+     */
     public void setPassword(String password) {
         if (password == null) throw new NullPointerException("Password must contain only a-z/A-Z/0-9!");
         if (password.isBlank()) throw new IllegalArgumentException("Password must be written!");
@@ -53,11 +96,25 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    // Other Methods
+
+    /**
+     * Returns a string representation of the user.
+     *
+     * @return A string containing the username and password of the user.
+     */
     @Override
     public String toString() {
         return "Username = " + username + ", Password = " + password;
     }
 
+    /**
+     * Registers a new user with the specified username and password.
+     *
+     * @param username The username for the new user.
+     * @param password The password for the new user.
+     * @throws Exception If there is an issue during user registration.
+     */
     public static void register(String username, String password) throws Exception {
         User user = new User();
         user.setUsername(username);
@@ -73,6 +130,75 @@ public class User implements Serializable {
 
         //System.out.println("Registration successful.");
     }
+
+    /**
+     * Checks if a user with the given username and password exists in the user database.
+     *
+     * @param username The username to check.
+     * @param password The password to check.
+     * @return True if the user exists, false otherwise.
+     */
+    public boolean checkLogin(String username, String password) {
+        List<User> users = loadFromDatabase();
+
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return true; // Username and password match
+            }
+        }
+
+        return false; // No matching username and password found
+    }
+
+    /**
+     * Adds a movie to the user's watchlist.
+     *
+     * @param movie The movie to add to the watchlist.
+     */
+    public void addToWatchlist(Movie movie) {
+        watchlist.add(movie);
+    }
+
+    /**
+     * Removes a movie from the user's watchlist.
+     *
+     * @param movie The movie to remove from the watchlist.
+     */
+    public void removeFromWatchlist(Movie movie) {
+        watchlist.remove(movie);
+    }
+
+    /**
+     * Sets the watchlist for the user.
+     *
+     * @param watchlist The list of movies to set as the user's watchlist.
+     */
+    public void setWatchlist(List<Movie> watchlist) {
+        this.watchlist = watchlist;
+    }
+
+    /**
+     * Displays the user's watchlist.
+     */
+    public void displayWatchlist() {
+        for (Movie movie : watchlist) {
+            System.out.println(movie.toString());
+        }
+    }
+
+    /**
+     * Gets the watchlist of the user.
+     *
+     * @return The user's watchlist.
+     */
+    public List<Movie> getWatchlist() {
+        if (watchlist == null) {
+            watchlist = new ArrayList<>();
+        }
+        return watchlist;
+    }
+
+    // Private Helper Methods
 
     private static boolean userExists(List<User> existingUsers, String username) {
         for (User user : existingUsers) {
@@ -93,7 +219,7 @@ public class User implements Serializable {
         }
     }
 
-    public static List<User> loadFromDatabase() {
+    private static List<User> loadFromDatabase() {
         List<User> users = new ArrayList<>();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Database/UserDatabase.txt"))) {
             while (true) {
@@ -108,39 +234,5 @@ public class User implements Serializable {
             e.printStackTrace();
         }
         return users;
-    }
-
-    public boolean checkLogin(String username, String password) {
-        List<User> users = loadFromDatabase();
-
-        for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return true; // Username and password match
-            }
-        }
-
-        return false; // No matching username and password found
-    }
-    public void addToWatchlist(Movie movie) {
-        watchlist.add(movie);
-    }
-    public void removeFromWatchlist(Movie movie) {
-        watchlist.remove(movie);
-    }
-    
-    public void setWatchlist(List<Movie> watchlist) {
-        this.watchlist = watchlist;
-    }
-
-    public void displayWatchlist() {
-        for (Movie movie : watchlist) {
-            System.out.println(movie.toString());
-        }
-    }
-    public List<Movie> getWatchlist() {
-        if (watchlist == null) {
-            watchlist = new ArrayList<>();
-        }
-        return watchlist;
     }
 }

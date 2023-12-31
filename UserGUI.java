@@ -15,7 +15,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UserGUI extends JFrame{
+/**
+ * The UserGUI class represents the graphical user interface for the SubwaySurfers application.
+ * It provides a login and registration system, displays movie information, and allows users to manage their watchlist.
+ * The class extends JFrame to create a graphical window.
+ *
+ * @author [Subway Surfers]
+ * @version 1.0
+ * @since [12/2023]
+ */
+public class UserGUI extends JFrame {
+
+    // Fields and constructors...
     private JTextField usernameField;
     private JPasswordField passwordField;
     private User user;
@@ -25,7 +36,12 @@ public class UserGUI extends JFrame{
     private List<User> users;
     private JFrame movieInfoFrame;
     private JLabel filterStatusLabel;
-    
+
+    /**
+     * Constructs a new UserGUI instance with the specified MovieDatabase.
+     *
+     * @param movieDatabase The MovieDatabase used in the application.
+     */
     public UserGUI(MovieDatabase movieDatabase) {
         setTitle("SubwaySurfers");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -113,6 +129,12 @@ public class UserGUI extends JFrame{
         filterStatusLabel = new JLabel("Filter By: Title"); // Initial text
         panel.add(filterStatusLabel, BorderLayout.SOUTH);
     }
+
+    /**
+     * Loads user data from the serialized file.
+     *
+     * @return A List of User objects loaded from the file.
+     */
     @SuppressWarnings("unchecked")
     private List<User> loadUsersData() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(USERS_DATA_FILE))) {
@@ -124,6 +146,10 @@ public class UserGUI extends JFrame{
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Saves the current list of users to a serialized file.
+     */
     private void saveUsersData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_DATA_FILE))) {
             oos.writeObject(users);
@@ -131,6 +157,13 @@ public class UserGUI extends JFrame{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Finds a user by their username in the list of users.
+     *
+     * @param username The username to search for.
+     * @return The User object if found, or null if not found.
+     */
     private User findUserByUsername(String username) {
         for (User u : users) {
             if (u.getUsername().equals(username)) {
@@ -139,7 +172,10 @@ public class UserGUI extends JFrame{
         }
         return null;
     }
-    
+
+    /**
+     * Loads the user's watchlist data from a serialized file.
+     */
     @SuppressWarnings("unchecked")
     private void loadWatchlistData() {
         if (user != null) {
@@ -162,7 +198,10 @@ public class UserGUI extends JFrame{
             }
         }
     }
-    
+
+    /**
+     * Saves the user's watchlist data to a serialized file.
+     */
     private void saveWatchlistData() {
         if (user != null) {
             String userWatchlistFolder = "UserWatchlists/";
@@ -181,8 +220,10 @@ public class UserGUI extends JFrame{
             }
         }
     }
-    
 
+    /**
+     * Displays the movie information in a new JFrame.
+     */
     private void showMovieInfoFrame() {
         if (movieInfoFrame != null) {
             movieInfoFrame.dispose(); // Close the existing movieInfoFrame before updating
@@ -265,14 +306,15 @@ public class UserGUI extends JFrame{
         MouseWheelListener horizontalWheelListener = new MouseWheelListener() {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-        JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
-        int unitsToScroll = e.getUnitsToScroll() * scrollSpeed;
-        horizontalScrollBar.setValue(horizontalScrollBar.getValue() + unitsToScroll);
-         }
-        };
+            JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+            int unitsToScroll = e.getUnitsToScroll() * scrollSpeed;
+            verticalScrollBar.setValue(verticalScrollBar.getValue() + unitsToScroll);
+        }
+    };
 
-        scrollPane.addMouseWheelListener(horizontalWheelListener);
-        scrollPane.getHorizontalScrollBar().addMouseWheelListener(horizontalWheelListener);
+    scrollPane.addMouseWheelListener(horizontalWheelListener);
+    scrollPane.getHorizontalScrollBar().addMouseWheelListener(horizontalWheelListener);
+
 
 
        
@@ -401,9 +443,13 @@ public class UserGUI extends JFrame{
 
     movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
     movieInfoFrame.setVisible(true);
-   
     }
 
+    /**
+     * Sorts the list of movies based on the specified filter.
+     *
+     * @param filter The filter to use for sorting (Title, Director, Running Time, Release Year).
+     */
     private void sortMoviesBy(String filter) {
         List<Movie> movies = movieDatabase.getMovies();
         List<Movie> sortedMovies;
@@ -430,7 +476,14 @@ public class UserGUI extends JFrame{
         movies.clear();
         movies.addAll(sortedMovies);
     }
-    
+
+    /**
+     * Sets the application icon with the specified path, width, and height.
+     *
+     * @param iconPath The path to the icon image file.
+     * @param width    The width of the icon.
+     * @param height   The height of the icon.
+     */
     public void setAppIcon(String iconPath, int width, int height) {
         try {
             ImageIcon icon = new ImageIcon(iconPath);
@@ -441,6 +494,13 @@ public class UserGUI extends JFrame{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Updates the movie display in the scroll pane based on the current movie list.
+     *
+     * @param moviePanel The panel containing movie information.
+     * @param scrollPane The scroll pane containing the movie panel.
+     */
     private void updateMovieDisplay(JPanel moviePanel, JScrollPane scrollPane) {
         moviePanel.removeAll(); // Clear the movie panel
         // Rebuild the movie panel based on the updated movie list
