@@ -312,8 +312,8 @@ public class UserGUI extends JFrame {
         }
     };
 
-    scrollPane.addMouseWheelListener(horizontalWheelListener);
-    scrollPane.getHorizontalScrollBar().addMouseWheelListener(horizontalWheelListener);
+        scrollPane.addMouseWheelListener(horizontalWheelListener);
+        scrollPane.getHorizontalScrollBar().addMouseWheelListener(horizontalWheelListener);
 
 
 
