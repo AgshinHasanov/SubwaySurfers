@@ -198,8 +198,13 @@ public class User implements Serializable {
         return watchlist;
     }
 
-    // Private Helper Methods
-
+    /**
+     * Checks if a username already exists in the list of users.
+     *
+     * @param existingUsers List of existing users to search through.
+     * @param username      The username to check for existence.
+     * @return {@code true} if the username exists in the list, {@code false} otherwise.
+     */
     private static boolean userExists(List<User> existingUsers, String username) {
         for (User user : existingUsers) {
             if (user.getUsername().equals(username)) {
@@ -209,6 +214,13 @@ public class User implements Serializable {
         return false;
     }
 
+
+    
+    /**
+     * Saves a list of users to a database file using serialization.
+     *
+     * @param users The list of users to be saved in the database file.
+     */
     private static void saveToDatabase(List<User> users) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Database/UserDatabase.txt"))) {
             for (User user : users) {
@@ -219,6 +231,11 @@ public class User implements Serializable {
         }
     }
 
+    /**
+     * Loads a list of users from a database file using deserialization.
+     *
+     * @return The list of users loaded from the database file.
+     */
     private static List<User> loadFromDatabase() {
         List<User> users = new ArrayList<>();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Database/UserDatabase.txt"))) {
