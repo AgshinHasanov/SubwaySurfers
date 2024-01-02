@@ -1,4 +1,3 @@
-
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -17,13 +16,11 @@ public class MovieTest {
         assertEquals("/path/to/photo", movie.getPhotoDirectory());
     }
 
-    // Test for the constructor with an invalid year
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidYearConstructor() {
         new Movie("Inception", "Christopher Nolan", 1890, 148, "/path/to/photo");
     }
 
-    // Test for the constructor with an invalid running time
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRunningTimeConstructor() {
         new Movie("The Shawshank Redemption", "Frank Darabont", 1994, -142, "/path/to/photo");
@@ -53,15 +50,13 @@ public class MovieTest {
         assertEquals("/path/to/titanic/photo", movie.getPhotoDirectory());
     }
 
-   
-    // Test for setRunningTime with an invalid running time
+  
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidSetRunningTime() {
         Movie movie = new Movie("The Dark Knight", "Christopher Nolan", 2008, 152, "/path/to/photo");
         movie.setRunningTime(-10);
     }
 
-    // Test for setYear with an invalid year
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidSetYear() {
         Movie movie = new Movie("Pulp Fiction", "Quentin Tarantino", 1994, 154, "/path/to/photo");

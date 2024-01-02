@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,26 +49,44 @@ public class UserGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(240, 240, 240)); // Set a light background color for the main panel
 
-        JPanel loginPanel = new JPanel(new GridLayout(3, 2));
-        loginPanel.setPreferredSize(new Dimension(300, 150)); // Set a fixed size for the login panel
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        loginPanel.setPreferredSize(new Dimension(300, 150));
+        loginPanel.setBackground(new Color(60, 60, 60)); // Set a darker background for the login panel
+        loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around the login panel
 
-        JLabel usernameLabel = new JLabel("Username:");
-        loginPanel.add(usernameLabel);
+        JLabel usernameLabel = new JLabel(" Username:");
+        usernameLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Changed font to Arial
+        usernameLabel.setForeground(Color.WHITE);
 
         usernameField = new JTextField();
-        loginPanel.add(usernameField);
+        usernameField.setBackground(Color.WHITE);
 
-        JLabel passwordLabel = new JLabel("Password:");
-        loginPanel.add(passwordLabel);
+        JLabel passwordLabel = new JLabel(" Password:");
+        passwordLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Changed font to Arial
+        passwordLabel.setForeground(Color.WHITE);
 
         passwordField = new JPasswordField();
-        loginPanel.add(passwordField);
+        passwordField.setBackground(Color.WHITE);
 
         JButton registerButton = new JButton("Register");
-        loginPanel.add(registerButton);
+        registerButton.setBackground(new Color(220, 50, 50)); // Changed button color to red
+        registerButton.setForeground(Color.WHITE);
+        registerButton.setFocusPainted(false); // Remove focus border
+        registerButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding to the button
 
         JButton loginButton = new JButton("Login");
+        loginButton.setBackground(new Color(220, 50, 50)); // Changed button color to red
+        loginButton.setForeground(Color.WHITE);
+        loginButton.setFocusPainted(false); // Remove focus border
+        loginButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding to the button
+
+        loginPanel.add(usernameLabel);
+        loginPanel.add(usernameField);
+        loginPanel.add(passwordLabel);
+        loginPanel.add(passwordField);
+        loginPanel.add(registerButton);
         loginPanel.add(loginButton);
 
         panel.add(loginPanel, BorderLayout.NORTH);
@@ -76,6 +96,7 @@ public class UserGUI extends JFrame {
         users = loadUsersData();
         selectedMovies = new ArrayList<>();
 
+        // Existing ActionListener code
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,17 +108,68 @@ public class UserGUI extends JFrame {
                         User newUser = new User(username, password);
                         users.add(newUser);
                         saveUsersData();
-                        JOptionPane.showMessageDialog(null, "Registration successful.");
+        
+                        // Custom success dialog with specified font, color, and style
+                        JDialog successDialog = new JDialog();
+                        successDialog.setTitle("Registration Successful");
+                        successDialog.setSize(300, 110);
+                        successDialog.setLayout(new BorderLayout());
+                        successDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                        JPanel successPanel = new JPanel(new BorderLayout());
+                        successPanel.setBackground(new Color(60, 60, 60));
+        
+                        // Add success icon
+                        ImageIcon successIcon = new ImageIcon("Database/tick.png"); // Replace with the actual path
+                        JLabel successIconLabel = new JLabel(successIcon);
+                        successIconLabel.setPreferredSize(new Dimension(40, 40)); // Set the preferred size
+                        successPanel.add(successIconLabel, BorderLayout.WEST);
+        
+                        JLabel successMessage = new JLabel("Registration successful.");
+                        successMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                        successMessage.setForeground(Color.WHITE);
+                        successMessage.setHorizontalAlignment(SwingConstants.LEFT);
+                        successMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                        successPanel.add(successMessage, BorderLayout.CENTER);
+        
+                        successDialog.add(successPanel, BorderLayout.CENTER);
+                        successDialog.setVisible(true);
                     } else {
                         throw new IllegalArgumentException("Username already exists");
                     }
                 } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Registration Failed", JOptionPane.ERROR_MESSAGE);
+                    // Custom error dialog with specified font, color, and style
+                    JDialog errorDialog = new JDialog();
+                    errorDialog.setTitle("Registration Failed");
+                    errorDialog.setSize(300, 110);
+                    errorDialog.setLayout(new BorderLayout());
+                    errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel errorPanel = new JPanel(new BorderLayout());
+                    errorPanel.setBackground(new Color(60, 60, 60));
+        
+                    // Add failure icon
+                    ImageIcon failureIcon = new ImageIcon("Database/error.png"); // Replace with the actual path
+                    JLabel failureIconLabel = new JLabel(failureIcon);
+                    failureIconLabel.setPreferredSize(new Dimension(40, 40)); // Set the preferred size
+                    errorPanel.add(failureIconLabel, BorderLayout.WEST);
+        
+                    JLabel errorMessage = new JLabel(ex.getMessage());
+                    errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                    errorMessage.setForeground(Color.WHITE);
+                    errorMessage.setHorizontalAlignment(SwingConstants.LEFT);
+                    errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                    errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                    errorDialog.add(errorPanel, BorderLayout.CENTER);
+                    errorDialog.setVisible(true);
                 }
             }
         });
-    
-
+        
+        
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,16 +182,70 @@ public class UserGUI extends JFrame {
                         user = loggedInUser;
                         loadWatchlistData();
                         showMovieInfoFrame();
-                        JOptionPane.showMessageDialog(null, "Login successful.");
+        
+                        // Custom success dialog with specified font, color, and style
+                        JDialog successDialog = new JDialog();
+                        successDialog.setTitle("Login Successful");
+                        successDialog.setSize(300, 110);
+                        successDialog.setLayout(new BorderLayout());
+                        successDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                        JPanel successPanel = new JPanel(new BorderLayout());
+                        successPanel.setBackground(new Color(60, 60, 60));
+        
+                        // Add success icon
+                        ImageIcon successIcon = new ImageIcon("Database/tick.png"); // Replace with the actual path
+                        JLabel successIconLabel = new JLabel(successIcon);
+                        successIconLabel.setPreferredSize(new Dimension(40, 40)); // Set the preferred size
+                        successPanel.add(successIconLabel, BorderLayout.WEST);
+        
+                        JLabel successMessage = new JLabel("Login successful.");
+                        successMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                        successMessage.setForeground(Color.WHITE);
+                        successMessage.setHorizontalAlignment(SwingConstants.LEFT);
+                        successMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                        successPanel.add(successMessage, BorderLayout.CENTER);
+        
+                        successDialog.add(successPanel, BorderLayout.CENTER);
+                        successDialog.setVisible(true);
+        
                         dispose();
                     } else {
                         throw new IllegalArgumentException("Invalid username or password");
                     }
                 } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
+                    // Custom error dialog with specified font, color, and style
+                    JDialog errorDialog = new JDialog();
+                    errorDialog.setTitle("Login Failed");
+                    errorDialog.setSize(300, 110);
+                    errorDialog.setLayout(new BorderLayout());
+                    errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel errorPanel = new JPanel(new BorderLayout());
+                    errorPanel.setBackground(new Color(60, 60, 60));
+        
+                    // Add failure icon
+                    ImageIcon failureIcon = new ImageIcon("Database/error.png"); // Replace with the actual path
+                    JLabel failureIconLabel = new JLabel(failureIcon);
+                    failureIconLabel.setPreferredSize(new Dimension(40, 40)); // Set the preferred size
+                    errorPanel.add(failureIconLabel, BorderLayout.WEST);
+        
+                    JLabel errorMessage = new JLabel(ex.getMessage());
+                    errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                    errorMessage.setForeground(Color.WHITE);
+                    errorMessage.setHorizontalAlignment(SwingConstants.LEFT);
+                    errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                    errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                    errorDialog.add(errorPanel, BorderLayout.CENTER);
+                    errorDialog.setVisible(true);
                 }
             }
         });
+        
+             
         add(panel);
         pack(); // Adjust frame size based on components
         setResizable(false); // Disable frame resizing
@@ -225,6 +351,8 @@ public class UserGUI extends JFrame {
      * Displays the movie information in a new JFrame.
      */
     private void showMovieInfoFrame() {
+
+        
         if (movieInfoFrame != null) {
             movieInfoFrame.dispose(); // Close the existing movieInfoFrame before updating
         }
@@ -235,60 +363,79 @@ public class UserGUI extends JFrame {
         movieInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         movieInfoFrame.setLocationRelativeTo(null);
         JPanel moviePanel = new JPanel(new GridLayout(0, 2, 10, 10));
-
+        moviePanel.setBackground(new Color(60, 60, 60)); 
+    
         List<Movie> movies = movieDatabase.getMovies();
         for (int i = 0; i < movies.size(); i++) {
             Movie movie = movies.get(i);
-
+    
             JPanel movieContainer = new JPanel(new BorderLayout());
-            movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
+            movieContainer.setBackground(new Color(60, 60, 60)); 
+            TitledBorder titledBorder = BorderFactory.createTitledBorder("");
+            titledBorder.setTitleColor(new Color(60, 60, 60)); // Set the title color to match the background
+            movieContainer.setBorder(titledBorder);
+            movieContainer.setBorder(BorderFactory.createEmptyBorder());
 
+    
             if (movie.getPhotoDirectory() != null && !movie.getPhotoDirectory().isEmpty()) {
                 ImageIcon originalIcon = new ImageIcon(movie.getPhotoDirectory());
                 Image originalImage = originalIcon.getImage();
-
+    
                 int maxWidth = 150;
                 int scaledWidth = Math.min(originalImage.getWidth(null), maxWidth);
                 int scaledHeight = (int) (((double) scaledWidth / originalImage.getWidth(null)) * originalImage.getHeight(null));
-
+    
                 ImageIcon scaledIcon = new ImageIcon(originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH));
                 JLabel photoLabel = new JLabel(scaledIcon);
-
+    
                 movieContainer.add(photoLabel, BorderLayout.WEST);
             }
-
+    
             JPanel infoPanel = new JPanel(new GridLayout(4, 1));
-            JLabel titleLabel = new JLabel("Title: " + movie.getTitle());
-            JLabel directorLabel = new JLabel("Director: " + movie.getDirector());
-            JLabel yearLabel = new JLabel("Year: " + movie.getYear());
-            JLabel runningTimeLabel = new JLabel("Running Time: " + movie.getRunningTime() + " minutes");
+            infoPanel.setBackground(new Color(100, 100, 100)); // Set background color of infoPanel  
+            JLabel titleLabel = new JLabel(" Title: " + movie.getTitle());
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            titleLabel.setForeground(Color.white); 
+            JLabel directorLabel = new JLabel(" Director: " + movie.getDirector());
+            directorLabel.setForeground(Color.white); 
+            directorLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            JLabel yearLabel = new JLabel(" Year: " + movie.getYear());
+            yearLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            yearLabel.setForeground(Color.white);                       
+            JLabel runningTimeLabel = new JLabel(" Running Time: " + movie.getRunningTime() + " minutes");
+            runningTimeLabel.setForeground(Color.white); 
+            runningTimeLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
+            infoPanel.setBorder(BorderFactory.createEmptyBorder());
             infoPanel.add(titleLabel);
             infoPanel.add(directorLabel);
             infoPanel.add(yearLabel);
             infoPanel.add(runningTimeLabel);
-
+    
             movieContainer.add(infoPanel, BorderLayout.CENTER);
-
-            // Add "Select" button for each movie
+    
             JButton selectButton = new JButton("Select");
+            selectButton.setBackground(new Color(220, 50, 50)); // Changed button color to red
+            selectButton.setForeground(Color.WHITE);
+            selectButton.setFocusPainted(false);
+            selectButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+    
             selectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Add the selected movie to the list
                     if (!selectedMovies.contains(movie)) {
                         selectedMovies.add(movie);
                     }
                 }
             });
             movieContainer.add(selectButton, BorderLayout.EAST);
-
+    
             moviePanel.add(movieContainer);
         }
-
+    
         JScrollPane scrollPane = new JScrollPane(moviePanel);
+        scrollPane.setBackground(new Color(240, 240, 240)); // Set background color of the scrollPane
         movieInfoFrame.add(scrollPane);
-
         int scrollSpeed = 20;
         MouseWheelListener wheelListener = new MouseWheelListener() {
             @Override
@@ -327,9 +474,29 @@ public class UserGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedMovies.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No movies selected to add to Watchlist.");
+                    // Custom error dialog for no movies selected
+                    JDialog errorDialog = new JDialog();
+                    errorDialog.setTitle("Add to Watchlist");
+                    errorDialog.setSize(300, 110);
+                    errorDialog.setLayout(new BorderLayout());
+                    errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel errorPanel = new JPanel(new BorderLayout());
+                    errorPanel.setBackground(new Color(60, 60, 60));
+        
+                    JLabel errorMessage = new JLabel("No movie/movies is selected to add to Watchlist.");
+                    errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                    errorMessage.setForeground(Color.WHITE);
+                    errorMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                    errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                    errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                    errorDialog.add(errorPanel, BorderLayout.CENTER);
+                    errorDialog.setVisible(true);
                 } else {
                     boolean movieAlreadyAdded = false;
+                    List<Movie> addedMovies = new ArrayList<>(); // To store added movies
         
                     for (Movie selectedMovie : selectedMovies) {
                         boolean movieExists = false;
@@ -342,31 +509,105 @@ public class UserGUI extends JFrame {
                         if (movieExists) {
                             movieAlreadyAdded = true;
                             break;
+                        } else {
+                            addedMovies.add(selectedMovie); // Store added movies
                         }
                     }
         
                     if (movieAlreadyAdded) {
-                        JOptionPane.showMessageDialog(null, "This movie is already in the Watchlist.");
-                    } else {
-                        List<Movie> moviesToAdd = new ArrayList<>(selectedMovies); // Create a new list
+                        // Custom error dialog for movie already on the Watchlist
+                        JDialog errorDialog = new JDialog();
+                        errorDialog.setTitle("Add to Watchlist");
+                        errorDialog.setSize(350, 110);
+                        errorDialog.setLayout(new BorderLayout());
+                        errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                        JPanel errorPanel = new JPanel(new BorderLayout());
+                        errorPanel.setBackground(new Color(60, 60, 60));
+        
+                        JLabel errorMessage = new JLabel("At least one of the movies is already on the Watchlist.");
+                        errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                        errorMessage.setForeground(Color.WHITE);
+                        errorMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                        errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                        errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                        errorDialog.add(errorPanel, BorderLayout.CENTER);
+                        errorDialog.setVisible(true);
+                    }  else {
+                        List<Movie> moviesToAdd = new ArrayList<>(addedMovies); // Use the addedMovies list
+        
                         for (Movie selectedMovie : moviesToAdd) {
                             user.addToWatchlist(selectedMovie);
                         }
-                        JOptionPane.showMessageDialog(null, "Movies added to Watchlist.");
+        
+                        // Custom success dialog for movies added to Watchlist
+                        JDialog successDialog = new JDialog();
+                        successDialog.setTitle("Add to Watchlist");
+                        successDialog.setSize(400, 160);
+                        successDialog.setLayout(new BorderLayout());
+                        successDialog.setLocationRelativeTo(null); // Center the dialog
+
+                        JPanel successPanel = new JPanel(new BorderLayout());
+                        successPanel.setBackground(new Color(60, 60, 60));
+
+                        JTextArea successTextArea = new JTextArea();
+                        successTextArea.setFont(new Font("Arial", Font.BOLD, 12));
+                        successTextArea.setForeground(Color.WHITE);
+                        successTextArea.setBackground(new Color(30, 30, 30));
+                        successTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                        JScrollPane scrollPane = new JScrollPane(successTextArea);
+                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+                        StringBuilder successMessage = new StringBuilder("Selected Movie/Movies added to Watchlist:\n");
+                        for (Movie movie : moviesToAdd) {
+                            successMessage.append("- ").append(movie.getTitle()).append("\n");
+                        }
+
+                        successTextArea.setText(successMessage.toString());
+                        successPanel.add(scrollPane, BorderLayout.CENTER);
+
+                        successDialog.add(successPanel, BorderLayout.CENTER);
+                        successDialog.setVisible(true);
+
                         saveWatchlistData(); // Save updated watchlist data
                     }
+                    selectedMovies.clear(); // Clear the original list after adding movies
                 }
-                selectedMovies.clear(); // Clear the original list after adding movies
             }
         });
+        
           
         removeFromWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedMovies.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No movies selected to remove from Watchlist.");
+                    // Custom error dialog for no movies selected to remove
+                    JDialog errorDialog = new JDialog();
+                    errorDialog.setTitle("Remove from Watchlist");
+                    errorDialog.setSize(350, 110);
+                    errorDialog.setLayout(new BorderLayout());
+                    errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel errorPanel = new JPanel(new BorderLayout());
+                    errorPanel.setBackground(new Color(60, 60, 60));
+        
+                    JLabel errorMessage = new JLabel("No movie/movies is/are selected to remove from Watchlist.");
+                    errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                    errorMessage.setForeground(Color.WHITE);
+                    errorMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                    errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                    errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                    errorDialog.add(errorPanel, BorderLayout.CENTER);
+                    errorDialog.setVisible(true);
                 } else {
                     boolean moviesRemoved = false;
+                    List<Movie> removedMovies = new ArrayList<>(); // To store removed movies
         
                     for (Movie selectedMovie : selectedMovies) {
                         Iterator<Movie> iterator = user.getWatchlist().iterator();
@@ -375,16 +616,66 @@ public class UserGUI extends JFrame {
                             if (movie.equals(selectedMovie)) {
                                 iterator.remove();
                                 moviesRemoved = true;
+                                removedMovies.add(selectedMovie); // Store removed movies
                                 break; // Break the loop after removing the movie
                             }
                         }
                     }
         
                     if (moviesRemoved) {
-                        JOptionPane.showMessageDialog(null, "Movies removed from Watchlist.");
+                        // Custom success dialog for movies removed from Watchlist
+                        JDialog successDialog = new JDialog();
+                        successDialog.setTitle("Remove from Watchlist");
+                        successDialog.setSize(300, 160);
+                        successDialog.setLayout(new BorderLayout());
+                        successDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                        JPanel successPanel = new JPanel(new BorderLayout());
+                        successPanel.setBackground(new Color(60, 60, 60));
+        
+                        JTextArea successTextArea = new JTextArea();
+                        successTextArea.setFont(new Font("Arial", Font.BOLD, 12));
+                        successTextArea.setForeground(Color.WHITE);
+                        successTextArea.setBackground(new Color(30, 30, 30));
+                        successTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                        JScrollPane scrollPane = new JScrollPane(successTextArea);
+                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+                        StringBuilder successMessage = new StringBuilder("Movies removed from Watchlist:\n");
+                        for (Movie movie : removedMovies) {
+                            successMessage.append("- ").append(movie.getTitle()).append("\n");
+                        }
+        
+                        successTextArea.setText(successMessage.toString());
+                        successPanel.add(scrollPane, BorderLayout.CENTER);
+        
+                        successDialog.add(successPanel, BorderLayout.CENTER);
+                        successDialog.setVisible(true);
+        
                         saveWatchlistData(); // Save updated watchlist data
                     } else {
-                        JOptionPane.showMessageDialog(null, "No selected movies found in Watchlist.");
+                        // Custom error dialog for no selected movies found in Watchlist
+                        JDialog errorDialog = new JDialog();
+                        errorDialog.setTitle("Remove from Watchlist");
+                        errorDialog.setSize(350, 110);
+                        errorDialog.setLayout(new BorderLayout());
+                        errorDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                        JPanel errorPanel = new JPanel(new BorderLayout());
+                        errorPanel.setBackground(new Color(60, 60, 60));
+        
+                        JLabel errorMessage = new JLabel("No selected movies found in Watchlist.");
+                        errorMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                        errorMessage.setForeground(Color.WHITE);
+                        errorMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                        errorMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                        errorPanel.add(errorMessage, BorderLayout.CENTER);
+        
+                        errorDialog.add(errorPanel, BorderLayout.CENTER);
+                        errorDialog.setVisible(true);
                     }
         
                     selectedMovies.clear();
@@ -392,13 +683,33 @@ public class UserGUI extends JFrame {
             }
         });
         
+        
         displayWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<Movie> watchlist = user.getWatchlist();
         
                 if (watchlist.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Watchlist is empty.");
+                    // Custom dialog for an empty watchlist
+                    JDialog emptyWatchlistDialog = new JDialog();
+                    emptyWatchlistDialog.setTitle("Watchlist");
+                    emptyWatchlistDialog.setSize(300, 110);
+                    emptyWatchlistDialog.setLayout(new BorderLayout());
+                    emptyWatchlistDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel emptyWatchlistPanel = new JPanel(new BorderLayout());
+                    emptyWatchlistPanel.setBackground(new Color(60, 60, 60));
+        
+                    JLabel emptyWatchlistMessage = new JLabel("Watchlist is empty.");
+                    emptyWatchlistMessage.setFont(new Font("Arial", Font.BOLD, 12));
+                    emptyWatchlistMessage.setForeground(Color.WHITE);
+                    emptyWatchlistMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                    emptyWatchlistMessage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+                    emptyWatchlistPanel.add(emptyWatchlistMessage, BorderLayout.CENTER);
+        
+                    emptyWatchlistDialog.add(emptyWatchlistPanel, BorderLayout.CENTER);
+                    emptyWatchlistDialog.setVisible(true);
                 } else {
                     int totalWatchTime = movieDatabase.calculateTotalWatchTimeInWatchlist(watchlist);
         
@@ -407,9 +718,29 @@ public class UserGUI extends JFrame {
                         watchlistInfo.append("- ").append(movie.getTitle()).append("\n");
                     }
         
-                    JOptionPane.showMessageDialog(null,
-                            "Total watch time in watchlist: " + totalWatchTime + " minutes\n\n" + watchlistInfo.toString(),
-                            "Watchlist", JOptionPane.INFORMATION_MESSAGE);
+                    // Custom dialog displaying watchlist content and total watch time
+                    JDialog watchlistDialog = new JDialog();
+                    watchlistDialog.setTitle("Watchlist");
+                    watchlistDialog.setSize(400, 250);
+                    watchlistDialog.setLayout(new BorderLayout());
+                    watchlistDialog.setLocationRelativeTo(null); // Center the dialog
+        
+                    JPanel watchlistPanel = new JPanel(new BorderLayout());
+                    watchlistPanel.setBackground(new Color(60, 60, 60));
+        
+                    JTextArea watchlistTextArea = new JTextArea();
+                    watchlistTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
+                    watchlistTextArea.setForeground(Color.WHITE);
+                    watchlistTextArea.setBackground(new Color(30, 30, 30));
+                    watchlistTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                    watchlistTextArea.setText(
+                        "Total watch time in watchlist: " + totalWatchTime + " minutes\n\n" + watchlistInfo.toString()
+                    );
+        
+                    watchlistPanel.add(watchlistTextArea, BorderLayout.CENTER);
+        
+                    watchlistDialog.add(watchlistPanel, BorderLayout.CENTER);
+                    watchlistDialog.setVisible(true);
                 }
             }
         });
@@ -417,7 +748,11 @@ public class UserGUI extends JFrame {
         
         JComboBox<String> filterComboBox = new JComboBox<>(new String[]{"Title", "Director", "Running Time", "Release Year"});
         JPanel filterPanel = new JPanel();
-        filterPanel.add(new JLabel("Filter By:"));
+        filterPanel.setBackground(new Color(60, 60, 60));
+        JLabel filterLabel = new JLabel("Filter By:");
+        filterLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        filterPanel.add(filterLabel);
+        filterLabel.setForeground(Color.white);
         filterPanel.add(filterComboBox);
         movieInfoFrame.add(filterPanel, BorderLayout.NORTH);
 
@@ -436,13 +771,22 @@ public class UserGUI extends JFrame {
             }
         });
 
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.add(addToWatchlistButton);
-    buttonPanel.add(removeFromWatchlistButton);
-    buttonPanel.add(displayWatchlistButton);
-
-    movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
-    movieInfoFrame.setVisible(true);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(60, 60, 60)); // Set background color to gray
+    
+        addToWatchlistButton.setForeground(Color.WHITE); // Set text color of addToWatchlistButton to white
+        addToWatchlistButton.setBackground(new Color(220, 50, 50));
+        removeFromWatchlistButton.setForeground(Color.WHITE); // Set text color of removeFromWatchlistButton to white
+        removeFromWatchlistButton.setBackground(new Color(220, 50, 50));
+        displayWatchlistButton.setForeground(Color.WHITE); // Set text color of displayWatchlistButton to white
+        displayWatchlistButton.setBackground(new Color(220, 50, 50));
+    
+        buttonPanel.add(addToWatchlistButton);
+        buttonPanel.add(removeFromWatchlistButton);
+        buttonPanel.add(displayWatchlistButton);
+    
+        movieInfoFrame.add(buttonPanel, BorderLayout.SOUTH);
+        movieInfoFrame.setVisible(true);
     }
 
     /**
@@ -503,54 +847,70 @@ public class UserGUI extends JFrame {
      */
     private void updateMovieDisplay(JPanel moviePanel, JScrollPane scrollPane) {
         moviePanel.removeAll(); // Clear the movie panel
-        // Rebuild the movie panel based on the updated movie list
         List<Movie> movies = movieDatabase.getMovies();
+        
         for (int i = 0; i < movies.size(); i++) {
             Movie movie = movies.get(i);
-
+    
             JPanel movieContainer = new JPanel(new BorderLayout());
+            movieContainer.setBackground(new Color(60, 60, 60)); 
             movieContainer.setBorder(BorderFactory.createTitledBorder("Movie " + (i + 1)));
-
+            TitledBorder titledBorder = BorderFactory.createTitledBorder("Movie " + (i + 1));
+            titledBorder.setTitleColor(Color.white); 
+            movieContainer.setBorder(titledBorder);
+    
             if (movie.getPhotoDirectory() != null && !movie.getPhotoDirectory().isEmpty()) {
                 ImageIcon originalIcon = new ImageIcon(movie.getPhotoDirectory());
                 Image originalImage = originalIcon.getImage();
-
+    
                 int maxWidth = 150;
                 int scaledWidth = Math.min(originalImage.getWidth(null), maxWidth);
                 int scaledHeight = (int) (((double) scaledWidth / originalImage.getWidth(null)) * originalImage.getHeight(null));
-
+    
                 ImageIcon scaledIcon = new ImageIcon(originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH));
                 JLabel photoLabel = new JLabel(scaledIcon);
-
+    
                 movieContainer.add(photoLabel, BorderLayout.WEST);
             }
-
+    
             JPanel infoPanel = new JPanel(new GridLayout(4, 1));
-            JLabel titleLabel = new JLabel("Title: " + movie.getTitle());
-            JLabel directorLabel = new JLabel("Director: " + movie.getDirector());
-            JLabel yearLabel = new JLabel("Year: " + movie.getYear());
-            JLabel runningTimeLabel = new JLabel("Running Time: " + movie.getRunningTime() + " minutes");
-
+            infoPanel.setBackground(new Color(100, 100, 100)); // Set background color of infoPanel  
+            JLabel titleLabel = new JLabel(" Title: " + movie.getTitle());
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            titleLabel.setForeground(Color.white); 
+            JLabel directorLabel = new JLabel(" Director: " + movie.getDirector());
+            directorLabel.setForeground(Color.white); 
+            directorLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            JLabel yearLabel = new JLabel(" Year: " + movie.getYear());
+            yearLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            yearLabel.setForeground(Color.white);                       
+            JLabel runningTimeLabel = new JLabel(" Running Time: " + movie.getRunningTime() + " minutes");
+            runningTimeLabel.setForeground(Color.white); 
+            runningTimeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+    
             infoPanel.add(titleLabel);
             infoPanel.add(directorLabel);
             infoPanel.add(yearLabel);
             infoPanel.add(runningTimeLabel);
-
+    
             movieContainer.add(infoPanel, BorderLayout.CENTER);
-
-            // Add "Select" button for each movie
+    
             JButton selectButton = new JButton("Select");
+            selectButton.setBackground(new Color(220, 50, 50)); // Changed button color to red
+            selectButton.setForeground(Color.WHITE);
+            selectButton.setFocusPainted(false);
+            selectButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+    
             selectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Add the selected movie to the list
                     if (!selectedMovies.contains(movie)) {
                         selectedMovies.add(movie);
                     }
                 }
             });
             movieContainer.add(selectButton, BorderLayout.EAST);
-
+    
             moviePanel.add(movieContainer);
         }
         // Refresh the scroll pane with the updated movie panel

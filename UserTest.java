@@ -1,5 +1,3 @@
-
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -71,9 +69,6 @@ public class UserTest {
             fail("Unexpected exception: " + e.getMessage());
         }
     }
-
-
-
 
     @Test
     public void testWatchlistOperations() {

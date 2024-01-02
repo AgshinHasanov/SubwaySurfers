@@ -1,4 +1,3 @@
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,8 +16,8 @@ public class MovieDatabaseTest {
     @Before
     public void setUp() {
         movieDatabase = new MovieDatabase("Tests/testDatabase.ser");
-        movie1 = new Movie("Movie 1", "Director 1", 2020, 120, "path/to/photo1.jpg");
-        movie2 = new Movie("Movie 2", "Director 2", 2019, 90, "path/to/photo2.jpg");
+        movie1 = new Movie("Movie 1", "Director 1", 2020, 120, "path/to/photo1.jpg"); //example movie1
+        movie2 = new Movie("Movie 2", "Director 2", 2019, 90, "path/to/photo2.jpg");  //example movie2
     }
 
     @Test
@@ -60,16 +59,19 @@ public class MovieDatabaseTest {
     public void testPrintAllMovies() {
         movieDatabase.addMovie(movie1);
         movieDatabase.addMovie(movie2);
-
+    
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-
+    
         movieDatabase.printAllMovies();
-
-        assertEquals("Movie 1 2020 120\nMovie 2 2019 90\n", outContent.toString());
-
+    
+        String expectedOutput = "Movie 1 2020 120" + System.lineSeparator() + "Movie 2 2019 90" + System.lineSeparator();
+        String actualOutput = outContent.toString();
+    
+        assertEquals(expectedOutput, actualOutput);
         System.setOut(System.out);
     }
+    
 
     @Test
     public void testSaveAndLoadDatabase() {
