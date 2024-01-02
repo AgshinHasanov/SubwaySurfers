@@ -553,6 +553,8 @@ public class UserGUI extends JFrame {
                         successPanel.setBackground(new Color(60, 60, 60));
 
                         JTextArea successTextArea = new JTextArea();
+                        successTextArea.setEditable(false);
+                        
                         successTextArea.setFont(new Font("Arial", Font.BOLD, 12));
                         successTextArea.setForeground(Color.WHITE);
                         successTextArea.setBackground(new Color(30, 30, 30));
@@ -634,6 +636,7 @@ public class UserGUI extends JFrame {
                         successPanel.setBackground(new Color(60, 60, 60));
         
                         JTextArea successTextArea = new JTextArea();
+                        successTextArea.setEditable(false);
                         successTextArea.setFont(new Font("Arial", Font.BOLD, 12));
                         successTextArea.setForeground(Color.WHITE);
                         successTextArea.setBackground(new Color(30, 30, 30));
@@ -729,6 +732,7 @@ public class UserGUI extends JFrame {
                     watchlistPanel.setBackground(new Color(60, 60, 60));
         
                     JTextArea watchlistTextArea = new JTextArea();
+                    watchlistTextArea.setEditable(false);
                     watchlistTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
                     watchlistTextArea.setForeground(Color.WHITE);
                     watchlistTextArea.setBackground(new Color(30, 30, 30));
