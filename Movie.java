@@ -223,14 +223,26 @@ public class Movie implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // Private helper methods
 
+    /**
+     * Validates whether the given year falls within the acceptable range (1895 to 2023, inclusive).
+     *
+     * @param year The year to be validated.
+     * @throws IllegalArgumentException If the year is not within the acceptable range.
+     */
     private void validateYear(int year) {
         if (year < 1895 || year > 2023) {
             throw new IllegalArgumentException("Year should be between 1895 and 2023");
         }
     }
 
+
+    /**
+     * Validates whether the given running time is a non-negative number.
+     *
+     * @param runningTime The running time of a movie (in minutes) to be validated.
+     * @throws IllegalArgumentException If the running time is a negative number.
+     */
     private void validateRunningTime(int runningTime) {
         if (runningTime < 0) {
             throw new IllegalArgumentException("Running time cannot be a negative number");

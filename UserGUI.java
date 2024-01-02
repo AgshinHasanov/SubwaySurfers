@@ -40,10 +40,38 @@ public class UserGUI extends JFrame {
     private JLabel filterStatusLabel;
 
     /**
-     * Constructs a new UserGUI instance with the specified MovieDatabase.
-     *
-     * @param movieDatabase The MovieDatabase used in the application.
-     */
+ * Constructs a new UserGUI instance with the specified MovieDatabase.
+ * Initializes the graphical user interface components, including a login panel with
+ * username and password fields, and login and register buttons.
+ * The login panel is configured with a specific layout, background colors, and font styles.
+ * The user data is loaded, and default values are set for the User and selectedMovies fields.
+ *
+ * Example Usage:
+ * ```
+ * MovieDatabase movieDatabase = // Initialize the movie database
+ * UserGUI userGUI = new UserGUI(movieDatabase);
+ * userGUI.setVisible(true); // Display the GUI
+ * ```
+ *
+ * Constructor Details:
+ * - Sets the title of the main window to "SubwaySurfers".
+ * - Configures the default close operation to terminate the application when the window is closed.
+ * - Creates a main panel with a light background color.
+ * - Creates a login panel with a 3x2 grid layout, a darker background color, and added padding.
+ * - Initializes JLabels for "Username" and "Password" with specified font styles and colors.
+ * - Initializes JTextField for entering the username with a white background.
+ * - Initializes JPasswordField for entering the password with a white background.
+ * - Initializes "Register" and "Login" buttons with specific colors, styles, and padding.
+ * - Adds components to the login panel, including labels, text fields, and buttons.
+ * - Adds the login panel to the main panel in the north position.
+ * - Loads user data using the loadUsersData method.
+ * - Initializes the user field with a new User instance.
+ * - Initializes the users field with the loaded user data or an empty list.
+ * - Initializes the selectedMovies field with an empty ArrayList.
+ *
+ * @param movieDatabase The MovieDatabase used in the application.
+ */
+
     public UserGUI(MovieDatabase movieDatabase) {
         setTitle("SubwaySurfers");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,6 +125,32 @@ public class UserGUI extends JFrame {
         selectedMovies = new ArrayList<>();
 
         // Existing ActionListener code
+        /**
+         * ActionListener implementation for the "Register" button in the UserGUI.
+         * When the "Register" button is clicked, this ActionListener retrieves the entered
+         * username and password, checks if the username already exists, and registers a new
+         * user if the username is unique. It displays a success or error dialog accordingly.
+         *
+         * Action Details:
+         * - Retrieves the entered username and password from the usernameField and passwordField.
+         * - Checks if a user with the entered username already exists using the findUserByUsername method.
+         * - If the username is unique, creates a new User object, adds it to the users list, and saves the updated user data.
+         * - Displays a custom success dialog with an icon and a message if registration is successful.
+         * - If the username already exists, throws an IllegalArgumentException and displays a custom error dialog.
+         * - The error dialog includes a specific error message obtained from the thrown exception.
+         *
+         * Dialog Details:
+         * - The success dialog includes a success icon, a message, and is styled with a specified font, color, and style.
+         * - The error dialog includes a failure icon, an error message, and is styled with a specified font, color, and style.
+         *
+         * Example Usage:
+         * ```
+         * JButton registerButton = new JButton("Register");
+         * registerButton.addActionListener(new ActionListener() {
+         *     // ActionListener code as described in the documentation
+         * });
+         * ```
+         */
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -169,7 +223,32 @@ public class UserGUI extends JFrame {
             }
         });
         
-        
+        /**
+         * ActionListener implementation for the "Login" button in the UserGUI.
+         * When the "Login" button is clicked, this ActionListener retrieves the entered
+         * username and password, attempts to find a matching user, and logs in if successful.
+         * It displays a success or error dialog accordingly.
+         *
+         * Action Details:
+         * - Retrieves the entered username and password from the usernameField and passwordField.
+         * - Attempts to find a user with the entered username using the findUserByUsername method.
+         * - If a user is found and the entered password matches, sets the user field, loads watchlist data,
+         *   shows the movie information frame, and disposes of the current JFrame.
+         * - Displays a custom success dialog with an icon and a message if login is successful.
+         * - If the username or password is invalid, throws an IllegalArgumentException and displays a custom error dialog.
+         *
+         * Dialog Details:
+         * - The success dialog includes a success icon, a message, and is styled with a specified font, color, and style.
+         * - The error dialog includes a failure icon, an error message, and is styled with a specified font, color, and style.
+         *
+         * Example Usage:
+         * ```
+         * JButton loginButton = new JButton("Login");
+         * loginButton.addActionListener(new ActionListener() {
+         *     // ActionListener code as described in the documentation
+         * });
+         * ```
+         */
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -245,7 +324,15 @@ public class UserGUI extends JFrame {
             }
         });
         
-             
+                /**
+         * Finalizes the setup of the UserGUI by adding components, adjusting frame size,
+         * and configuring frame properties for display.
+         *
+         * This method adds the main panel to the frame, adjusts the frame size based on the
+         * components added, disables frame resizing, centers the frame on the screen, and sets
+         * it to be visible. Additionally, it loads the user's watchlist data, and initializes
+         * the filterStatusLabel with an initial text, adding it to the bottom of the main panel.
+         */     
         add(panel);
         pack(); // Adjust frame size based on components
         setResizable(false); // Disable frame resizing
@@ -347,9 +434,16 @@ public class UserGUI extends JFrame {
         }
     }
 
-    /**
-     * Displays the movie information in a new JFrame.
-     */
+   /**
+ * Displays detailed information about movies in a new JFrame.
+ *
+ * This method creates and configures a new JFrame, 'movieInfoFrame', for displaying detailed
+ * information about movies. If an existing 'movieInfoFrame' is present, it is closed before
+ * updating. The movie information includes the movie's photo, title, director, year, and running time.
+ * The information is presented in a visually appealing layout with proper formatting and styling.
+ * Users can also select movies by clicking the "Select" button, and the selected movies are added
+ * to the 'selectedMovies' list.
+ */
     private void showMovieInfoFrame() {
 
         
@@ -432,7 +526,13 @@ public class UserGUI extends JFrame {
     
             moviePanel.add(movieContainer);
         }
-    
+            /**
+         * Configures and adds a JScrollPane to the movieInfoFrame containing moviePanel.
+         * The JScrollPane allows scrolling through the movie information, and the scroll speed
+         * is adjusted for both vertical and horizontal scrolling. Additionally, three buttons,
+         * "Add to Watchlist," "Remove from Watchlist," and "Display Watchlist," are created and
+         * can be used for specific actions related to the user's watchlist.
+         */    
         JScrollPane scrollPane = new JScrollPane(moviePanel);
         scrollPane.setBackground(new Color(240, 240, 240)); // Set background color of the scrollPane
         movieInfoFrame.add(scrollPane);
@@ -469,7 +569,14 @@ public class UserGUI extends JFrame {
         JButton addToWatchlistButton = new JButton("Add to Watchlist");
         JButton removeFromWatchlistButton = new JButton("Remove from Watchlist");
         JButton displayWatchlistButton = new JButton("Display Watchlist");
-        
+                /**
+         * ActionListener for the addToWatchlistButton. Handles the action performed
+         * when the button is clicked. It checks if any movies are selected, and if
+         * so, adds them to the user's watchlist. Custom dialogs are displayed for
+         * different scenarios, such as no movies selected, movies already on the watchlist,
+         * and success in adding movies to the watchlist. The user's watchlist is updated
+         * and saved to the serialized file.
+         */
         addToWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -582,7 +689,11 @@ public class UserGUI extends JFrame {
             }
         });
         
-          
+        /**
+         * ActionListener for the remove from watchlist button.
+         * This ActionListener is triggered when the remove from watchlist button is clicked.
+         * It handles the removal of selected movies from the user's watchlist.
+         */ 
         removeFromWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -686,7 +797,11 @@ public class UserGUI extends JFrame {
             }
         });
         
-        
+        /**
+         * ActionListener for displaying the user's watchlist.
+         * This ActionListener is triggered when the display watchlist button is clicked.
+         * It retrieves the user's watchlist, displays its content, and total watch time in a dialog.
+         */
         displayWatchlistButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -749,8 +864,16 @@ public class UserGUI extends JFrame {
             }
         });
         
-        
+        /**
+         * JComboBox for filtering movies by different criteria such as Title, Director, Running Time, and Release Year.
+         * Allows users to select a filter option to organize the displayed movie list.
+         */
         JComboBox<String> filterComboBox = new JComboBox<>(new String[]{"Title", "Director", "Running Time", "Release Year"});
+        
+        /**
+         * Panel containing the filter components for organizing movie display.
+         */
+        
         JPanel filterPanel = new JPanel();
         filterPanel.setBackground(new Color(60, 60, 60));
         JLabel filterLabel = new JLabel("Filter By:");
@@ -774,7 +897,9 @@ public class UserGUI extends JFrame {
                 }
             }
         });
-
+        /**
+         * Panel containing buttons related to managing the watchlist and displaying its content.
+          */
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(60, 60, 60)); // Set background color to gray
     
